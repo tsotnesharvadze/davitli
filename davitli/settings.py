@@ -25,7 +25,7 @@ SECRET_KEY = 'i2x(t_q=e$+abjjrgioj_lh&=vy48_%ab9-)@6*c**y0x(n!d*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['c4b5f2a9.ngrok.io']
 
 
 # Application definition
