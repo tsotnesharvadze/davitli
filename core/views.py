@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 import wolframalpha
 from mtranslate.core import translate
 #  ------------------------ Fill this with your page access token! -------------------------------
-PAGE_ACCESS_TOKEN = "EAAB1GgOpEzQBAPWVUTWKZBuPQ1oFsng71kAXuu4qY9l92dnyGUkDYaqwIWvLHas7nlpKWjqXICpfIzgZCHnwEw8oQbMZC54meuEdvjgX6jm40Ov775GAAlJYR5qAvUzkS0KoCQilB7PPXWikmZAU4OMXt5npJHb5dZCFl4kex3gZDZD"
+PAGE_ACCESS_TOKEN = "EAAB1GgOpEzQBAIr3IqVHrcmZAtm1edVXO2Im2IZCt5y6ueTucOSgQXypgDoXy5bSRALy9jlPq2El11zbFFU93RfDBLm2F4uar6ZAVuNGH42L86OHZCk8BxsSuwZBibXpzlnv8luXeOGmvdVWLmqdq4tZClQLZAzCbZAQZBbTNSaWZAFQZDZD"
 VERIFY_TOKEN = "mamasheni"
 
 jokes = { 'stupid': ["""Yo' Mama is so stupid, she needs a recipe to make ice cubes.""", 
@@ -37,10 +37,11 @@ def post_facebook_message(fbid, recevied_message):
 
     client = wolframalpha.Client(app_id)
     res = client.query(trans)
-
-    anwer1 = next(res.results).text
-    pasuxi = translate(anwer1,'ka','auto')
-                   
+    try:
+        anwer1 = next(res.results).text
+        pasuxi = translate(anwer1,'ka','auto')
+    except:
+       pasuxi =  'დიდი ბოდიში ამაზე ვერ გიპასუხებ'
     post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
     response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":pasuxi}})
     status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
