@@ -15,12 +15,11 @@ from mtranslate.core import translate
 PAGE_ACCESS_TOKEN = "EAAB1GgOpEzQBAIr3IqVHrcmZAtm1edVXO2Im2IZCt5y6ueTucOSgQXypgDoXy5bSRALy9jlPq2El11zbFFU93RfDBLm2F4uar6ZAVuNGH42L86OHZCk8BxsSuwZBibXpzlnv8luXeOGmvdVWLmqdq4tZClQLZAzCbZAQZBbTNSaWZAFQZDZD"
 VERIFY_TOKEN = "mamasheni"
 
-jokes = { 'stupid': ["""Yo' Mama is so stupid, she needs a recipe to make ice cubes.""", 
-                     """Yo' Mama is so stupid, she thinks DNA is the National Dyslexics Association."""], 
-         'fat':      ["""Yo' Mama is so fat, when she goes to a restaurant, instead of a menu, she gets an estimate.""", 
-                      """ Yo' Mama is so fat, when the cops see her on a street corner, they yell, "Hey you guys, break it up!" """], 
-         'dumb': ["""Yo' Mama is so dumb, when God was giving out brains, she thought they were milkshakes and asked for extra thick.""", 
-                  """Yo' Mama is so dumb, she locked her keys inside her motorcycle."""] }
+dicti1 = {'მოდული': 'absolute value of', 'უკვეცი': 'irreducible', 'ლოგარითმი': 'log',
+ 		'ინტეგრალი': 'integrate', 'სადაც': 'where', 'მნიშვნელობა': 'value', 'ნამდვილიდან ნამდვილ ცვლადშია': 'from real to real',
+		'მეორე რიგის წარმოებული': 'second derivative', 'წარმოებული': 'derivative', 'მაქსიმალური მნიშვნელობა': 'maximum value',
+ 		'პი': 'pi', 'ციფრი': 'digit', 'ამოხსენი': 'solve', 'განსაზღვრული': 'definite', 'კონსტანტა': 'constant', 'განუსაზღვრელი': 'indefinite', 
+		'დიფერენციალი': 'differential', 'ზღვარი': 'limit', 'უსასრულობა': '∞', 'გამოთვალე': 'calculate', 'მინიმალური მნიშვნელობა': 'minimum value'}
 
 # Helper function
 def post_facebook_message(fbid, recevied_message):
@@ -28,24 +27,67 @@ def post_facebook_message(fbid, recevied_message):
     # user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':PAGE_ACCESS_TOKEN} 
     # user_details = requests.get(user_details_url, user_details_params).json()
 
-    app_id = '8LJR68-JKELEXKH5X'
+    if recevied_message == 'კითხვაარა':
+        post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
+        response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":'უი, მე მხოლოდ შემიძლია ტექსტის წაკითხვა'}})
+        status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
+    elif recevied_message ==  369239263222822:
+        print('-----------------------------------------------------------------------------------------------------')
+        post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
+        response_msg = json.dumps({"recipient":{"id":fbid}, 'message': {'attachments': [{'payload': {'sticker_id': 369239263222822,
+                                          'url': 'https://scontent.xx.fbcdn.net/v/t39.1997-6/851557_369239266556155_759568595_n.png?_nc_ad=z-m&oh=51f7030fcdd99dc871819c84a847931f&oe=59B05CDC'},
+                                                                'type': 'image'}],
+                                                'mid': 'mid.$cAAFVWv8dBK1iXCbtpVcKuGWb0dL1',
+                                                'seq': 1472925,
+                                                'sticker_id': 369239263222822},
+                                    'recipient': {'id': '298694183907664'},
+                                    'sender': {'id': '1313880405374024'},
+                                    'timestamp': 1495368050085,
+                                    'text':'ლიქე ლიქე ლიქე'})
+        status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
+    else:
+        
+        app_id = '8LJR68-JKELEXKH5X'
 
-    quest = recevied_message
+        quest = recevied_message
+        listi = quest.split(' ')
 
-    trans =   translate(quest,'en','auto')
+        for index,word in enumerate(listi) :
+            if word in dicti1.keys():
+                listi[index] = dicti1[word]
 
 
-    client = wolframalpha.Client(app_id)
-    res = client.query(trans)
-    try:
-        anwer1 = next(res.results).text
-        pasuxi = translate(anwer1,'ka','auto')
-    except:
-       pasuxi =  'დიდი ბოდიში ამაზე ვერ გიპასუხებ'
-    post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
-    response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":pasuxi}})
-    status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
-    pprint(status.json())
+
+        quest = ' '.join(listi)
+
+
+        trans =   translate(quest,'en','auto')
+
+
+        client = wolframalpha.Client(app_id)
+        res = client.query(trans)
+        try:
+            answer1 = ''
+            for answer in res.results:
+                answer1+=answer.text + '\n'
+            # answer1 = next(res.results).text
+            # if not ('(' in answer1 or '+' in answer1 or '=' in answer1) :
+            pasuxi = translate(answer1,'ka','auto')
+            try:
+                pasuxi.replace('განუყოფელი','განუსაზღვრელი')
+                pasuxi.replace('ინტეგრალური','ინტეგრალი')
+            except:
+                pass
+            # else:
+                # pasuxi = answer1
+        
+        except Exception as ge:
+            pasuxi =  'უი, რაღაც ისე ვერაა ქე რო უნდა იყოს :/'
+        post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
+        response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":pasuxi}})
+        status = requests.post(post_message_url, headers={"Content-Type": "application/json"},
+        data=response_msg)
+        pprint(status.json())
 
 # Create your views here.
 class Index(generic.View):
@@ -74,6 +116,54 @@ class Index(generic.View):
                     pprint(message)    
                     # Assuming the sender only sends text. Non-text messages like stickers, audio, pictures
                     # are sent as attachments and must be handled accordingly. 
-                    print('--------------')
-                    post_facebook_message(message['sender']['id'], message['message']['text'])    
+                    try:
+                        message1 = message['message']['text']
+                    except:
+                        try:
+                            message1 = message['message']['sticker_id']
+                        except:
+                            message1 = 'კითხვაარა'
+                    post_facebook_message(message['sender']['id'], message1)    
         return HttpResponse() 
+
+
+
+# "persistent_menu":[
+#     { 
+#       "locale":"default",
+#       "composer_input_disabled":True, 
+#       "call_to_actions":[  
+#         {
+#           "title":"My Account",
+#           "type":"nested",
+#           "call_to_actions":[
+#             {
+#               "title":"Pay Bill",
+#               "type":"postback",
+#               "payload":"PAYBILL_PAYLOAD"
+#             },
+#             {
+#               "title":"History",
+#               "type":"postback",
+#               "payload":"HISTORY_PAYLOAD"
+#             },
+#             {
+#               "title":"Contact Info",
+#               "type":"postback",
+#               "payload":"CONTACT_INFO_PAYLOAD"
+#             }
+#           ]
+#         },
+#         {
+#           "type":"web_url",
+#           "title":"Latest News",
+#           "url":"http://petershats.parseapp.com/hat-news",
+#           "webview_height_ratio":"full"
+#         }
+#       ]
+#     },
+#     {
+#       "locale":"zh_CN",
+#       "composer_input_disabled":False
+#     }
+#   ]
