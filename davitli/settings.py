@@ -25,12 +25,13 @@ SECRET_KEY = 'i2x(t_q=e$+abjjrgioj_lh&=vy48_%ab9-)@6*c**y0x(n!d*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['7819883e.ngrok.io']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -11,6 +11,10 @@ from django.utils.decorators import method_decorator
 
 import wolframalpha
 from mtranslate.core import translate
+
+from django.db.models import Q
+
+from .models import QuestionMix,Question
 #  ------------------------ Fill this with your page access token! -------------------------------
 PAGE_ACCESS_TOKEN = "EAAB1GgOpEzQBAIr3IqVHrcmZAtm1edVXO2Im2IZCt5y6ueTucOSgQXypgDoXy5bSRALy9jlPq2El11zbFFU93RfDBLm2F4uar6ZAVuNGH42L86OHZCk8BxsSuwZBibXpzlnv8luXeOGmvdVWLmqdq4tZClQLZAzCbZAQZBbTNSaWZAFQZDZD"
 VERIFY_TOKEN = "mamasheni"
@@ -32,7 +36,6 @@ def post_facebook_message(fbid, recevied_message):
         response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":'უი, მე მხოლოდ შემიძლია ტექსტის წაკითხვა'}})
         status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
     elif recevied_message ==  369239263222822:
-        print('-----------------------------------------------------------------------------------------------------')
         post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
         response_msg = json.dumps({"recipient":{"id":fbid}, 'message': {'attachments': [{'payload': {'sticker_id': 369239263222822,
                                           'url': 'https://scontent.xx.fbcdn.net/v/t39.1997-6/851557_369239266556155_759568595_n.png?_nc_ad=z-m&oh=51f7030fcdd99dc871819c84a847931f&oe=59B05CDC'},
@@ -118,7 +121,18 @@ class Index(generic.View):
                     # are sent as attachments and must be handled accordingly. 
                     try:
                         message1 = message['message']['text']
-                    except:
+                        ques = Q(question = message1) or Q(question__startswith = message1) or Q(question__icontains = message1)
+                        msg = Question.objects.filter(ques)
+                        pprint(msg)
+                        if msg:
+                            answ = msg.first().mix.answer_set.all().order_by('?').first().answer
+                            post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
+                            response_msg = json.dumps({"recipient":{"id":message['sender']['id']}, "message":{"text":answ}})
+                            status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
+                            break
+                        
+                    except Exception as E:
+                        pprint(E)
                         try:
                             message1 = message['message']['sticker_id']
                         except:
